@@ -12,23 +12,11 @@ import json
 input_folder = './PSKUS_dataset'
 output_folder = './PSKUS_dataset_preprocessed'
 
-# movement 0 is large part of the dataset; use only 20% of all frames
-MOVEMENT_0_PROPORTION = 0.2
-
 # the movement codes are from 0 to 7
 TOTAL_MOVEMENTS = 8
 
 # the Annotator directories go from Annotator1 to Annotator8
 TOTAL_ANNOTATORS = 8
-
-FPS = 30
-
-# allow up to +-0.5 seconds for reaction time
-REACTION_TIME_FRAMES = FPS // 2
-
-# ignore frames above this duration threshold
-MAX_FRAMES = 60 * FPS
-
 
 FULL_PROCESSING = True
 
