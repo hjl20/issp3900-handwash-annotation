@@ -84,13 +84,15 @@ def get_frames(folder):
             # exit early if not desired file format
             if not videofile.endswith(".mp4"):
                 continue
+                
+            if not FULL_PROCESSING:
+                continue
+
+            print('Video name: ' + os.path.splitext(videofile)[0])
             
             # get gesture code of current video
             fullpath = os.path.join(subdir, videofile)
             codes = find_frame_labels(fullpath)
-                
-            if not FULL_PROCESSING:
-                continue
 
             # video splitting process
             vidcap = cv2.VideoCapture(fullpath)
@@ -121,10 +123,14 @@ def main():
     # Gets folders of datasets to process
     list_of_folders = [d for d in os.listdir(input_folder) if os.path.isdir(os.path.join(input_folder, d))]
     for folder in sorted(list_of_folders):
+        # Create output folders
+        if not os.path.isdir(os.path.join(output_folder)):
+            os.mkdir(output_folder)
         if not os.path.isdir(os.path.join(output_folder, folder)):
             os.mkdir(os.path.join(output_folder, folder))
         get_frames(folder)
 
 # ----------------------------------------------
 if __name__ == "__main__":
+
     main()
