@@ -3,7 +3,7 @@ import os
 
 def rename_files(directory):
     script_directory = os.path.dirname(os.path.abspath(__file__))
-    mod_directory = os.path.join(script_directory, 'mod')
+    mod_directory = os.path.join(script_directory, 'pubset_renamed')
 
     if not os.path.exists(directory):
         print(f"Directory '{directory}' does not exist.")

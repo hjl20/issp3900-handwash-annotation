@@ -16,21 +16,22 @@
 
 ### Recommended File structure
 PSKUS_dataset Folder
-    > DataSet1
-        > Videos
-            > ** should only contain 1 video**
-                - you dont have to delete your videos, just change the name of the current folder and make a separate folder that contains only 1 video for processing
+- DataSet1
+- Videos 
+    - ** should only contain 1 video**
+    - you dont have to delete your videos, just change the name of the current folder and make a separate folder that contains only 1 video for processing
 
-- After running get-and-preprocess-dataset.sh
+*After running get-and-preprocess-dataset.sh
+
 PSKUS_dataset_preprocessed
-    > DataSet1
-        > bunch of jpg and txt files
-    > Cvat 'obj_train_data'
-        - this folder is included when you export the annotations from cvat. it should be called obj_train_data
-        - this folder contains png and txt files. you don't have to modify this folder in any way. but you can remove the png files if you want. DO NOT REMOVE THE TXT FILES.
-    > check_gestures.py
-    > rename_files.py
-    > process_cvat.py
+- DataSet1
+    - bunch of jpg and txt files
+- Cvat 'obj_train_data'
+    - this folder is included when you export the annotations from cvat. it should be called obj_train_data
+    - this folder contains png and txt files. you don't have to modify this folder in any way. but you can remove the png files if you want. DO NOT REMOVE THE TXT FILES.
+- check_gestures.py
+- rename_files.py
+- process_cvat.py
 
 
 ### (OPTIONAL) Run check_gestures.py
