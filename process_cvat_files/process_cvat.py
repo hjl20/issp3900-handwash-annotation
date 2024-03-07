@@ -13,16 +13,19 @@ def read_single_digit_number(filepath):
 # Process files in pubset directory one by one
 def process_pub_files(pub_directory, cvat_directory):
     for pub_filename in os.listdir(pub_directory):
-        pub_filepath = os.path.join(pub_directory, pub_filename)
-        if os.path.isfile(pub_filepath):
-            # Read single digit number from the pubset file
-            single_digit_number = read_single_digit_number(pub_filepath)
-            # Find matching file in cvat directory
-            cvat_filename = pub_filename
-            cvat_filepath = os.path.join(cvat_directory, cvat_filename)
-            if os.path.isfile(cvat_filepath) and cvat_filename.endswith('.txt'):
-                # Update data in the cvat file
-                update_cvat_file(cvat_filepath, single_digit_number)
+        if pub_filename.endswith('.jpg.txt'):
+            pub_filepath = os.path.join(pub_directory, pub_filename)
+            if os.path.isfile(pub_filepath):
+                # Read single digit number from the pubset file
+                single_digit_number = read_single_digit_number(pub_filepath)
+                # Find matching file in cvat directory
+                cvat_filename = os.path.splitext(os.path.splitext(pub_filename)[0])[0]
+                cvat_filepath = os.path.join(cvat_directory, cvat_filename + '.txt')
+                if os.path.isfile(cvat_filepath):
+                    # Update data in the cvat file
+                    update_cvat_file(cvat_filepath, single_digit_number)
+                else:
+                    print('file not found')
 
 # Function to update data in the cvat file
 def update_cvat_file(cvat_filepath, single_digit_number):
@@ -38,8 +41,8 @@ def update_cvat_file(cvat_filepath, single_digit_number):
         file.writelines(updated_lines)
 
 # Directory paths
-pub_directory = 'pubset_renamed'
-cvat_directory = 'obj_train_data' # folder that contains the cvat bounding boxes txt files
+pub_directory = 'DataSet1_txt'
+cvat_directory = 'CVATDataSet1' # folder that contains the cvat bounding boxes txt files
 
 # Process files in pub directory and update corresponding cvat files
 process_pub_files(pub_directory, cvat_directory)
