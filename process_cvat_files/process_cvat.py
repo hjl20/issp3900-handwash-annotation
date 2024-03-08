@@ -3,8 +3,8 @@ import os
 
 # Update CVAT train folder to lowercase
 def dirname_to_lowercase(cvat_dir):
-    print(os.path.join(cvat_dir))
-    if os.path.join(cvat_dir):
+    # print(os.path.join(cvat_dir))
+    if os.path.isdir(cvat_dir):
         os.rename(os.path.join(cvat_dir), os.path.join(cvat_dir).lower())
 
 # Function to read the single digit number from the pub directory
@@ -18,6 +18,9 @@ def read_single_digit_number(filepath):
 
 # Process files in pubset directory one by one
 def process_pub_files(cvat_dir, pub_dir_txt):
+    if not os.path.isdir(cvat_dir) or not os.path.isdir(pub_dir_txt):
+        print(f"Error: One or both of the directories ({cvat_dir} and {pub_dir_txt}) not found.")
+        return
     for pub_filename in os.listdir(pub_dir_txt):
         if pub_filename.endswith('.txt'):
             pub_filepath = os.path.join(pub_dir_txt, pub_filename)
@@ -32,6 +35,7 @@ def process_pub_files(cvat_dir, pub_dir_txt):
                     update_cvat_file(cvat_filepath, single_digit_number)
                 else:
                     print('file not found')
+    print(f"Value changes successful for {cvat_dir}!")
 
 # Function to update data in the cvat file
 def update_cvat_file(cvat_filepath, single_digit_number):
@@ -60,7 +64,7 @@ def main():
         pub_dir_txt = f"../PSKUS_dataset_preprocessed/DataSet{i}_TXT"
 
         process_pub_files(cvat_dir, pub_dir_txt)
-        print(f"Value changes successful for set {i}!")
+
 
 
 main()
