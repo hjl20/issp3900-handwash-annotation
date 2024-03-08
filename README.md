@@ -7,11 +7,11 @@ Comment in/out the datasets you want to download, unzip, and process. We will be
 2. Run ```./get-and-process-dataset.sh``` in terminal and the rest will be done for you.
 3. Download your CVAT data sets and move it to the same directory as the PSKUS_dataset and PSKUS_dataset_preprocessed. Rename it as 'CVAT_dataset'.
 4. Go in the CVAT_dataset folder. Rename each dataset folder to this format: 'CVATDataSet#' (eg. CVATDataSet1).
-5. Go in the process_cvat_files directory where you will find three scripts: filter_not_washing.py, process_cvat.py, and rename_txt_files.py
-### IMPORTANT: The scripts in step7 need to be executed in the correct sequence. Follow the steps below
-6. Run ```./rename_txt_files.py```
-7. Run ```./process_cvat.py```
-8. Run ```./filter_not_washing.py```
+5. Go in the process_cvat_files directory where you will find three scripts: filter_not_washing.sh, process_cvat.sh, and rename_txt_files.sh
+### IMPORTANT: The scripts in step5 need to be executed in the correct sequence. Follow the steps below
+6. Run ```./rename_txt_files.sh```
+7. Run ```./process_cvat.sh```
+8. Run ```./filter_not_washing.sh```
 
 ## How to use w/o bash script
 1. Download PSKUS datasets and extract them into a folder called PSKUS_dataset in the same directory as the scripts and README.
