@@ -11,10 +11,10 @@ def read_single_digit_number(filepath):
     return single_digit_number
 
 # Process files in pubset directory one by one
-def process_pub_files(pub_directory, cvat_directory):
-    for pub_filename in os.listdir(pub_directory):
-        if pub_filename.endswith('.jpg.txt'):
-            pub_filepath = os.path.join(pub_directory, pub_filename)
+def process_pub_files(cvat_directory, pub_dir_txtectory):
+    for pub_filename in os.listdir(pub_dir_txtectory):
+        if pub_filename.endswith('.txt'):
+            pub_filepath = os.path.join(pub_dir_txtectory, pub_filename)
             if os.path.isfile(pub_filepath):
                 # Read single digit number from the pubset file
                 single_digit_number = read_single_digit_number(pub_filepath)
@@ -40,9 +40,15 @@ def update_cvat_file(cvat_filepath, single_digit_number):
     with open(cvat_filepath, 'w') as file:
         file.writelines(updated_lines)
 
-# Directory paths
-pub_directory = 'DataSet1_txt'
-cvat_directory = 'CVATDataSet1' # folder that contains the cvat bounding boxes txt files
 
 # Process files in pub directory and update corresponding cvat files
-process_pub_files(pub_directory, cvat_directory)
+def main():
+    ranges = [1, 3, 4, 5]
+    for i in ranges:
+        cvat_dir = f"../CVAT_dataset/CVATDataSet{i}/obj_Train_data"
+        pub_dir_txt = f"../PSKUS_dataset_preprocessed/DataSet{i}_TXT"
+        process_pub_files(cvat_dir, pub_dir_txt)
+        print(f"Value changes successful for set {i}!")
+
+
+main()
