@@ -12,6 +12,9 @@ import json
 input_folder = './PSKUS_dataset'
 output_folder = './PSKUS_dataset_preprocessed'
 
+IMG_FOLDER_EXT = '_IMG'
+TXT_FOLDER_EXT = '_TXT'
+
 # the movement codes are from 0 to 7
 TOTAL_MOVEMENTS = 8
 
@@ -78,8 +81,10 @@ def get_frames(folder):
     print('Processing folder: ' + folder + ' ...')
 
     for subdir, dirs, files in os.walk(os.path.join(input_folder, folder)):
-        for videofile in files:
+        if not subdir.endswith('/Videos'):
+            continue
 
+        for videofile in files:
             # exit early if not desired file format
             if not videofile.endswith(".mp4"):
                 continue
@@ -106,8 +111,8 @@ def get_frames(folder):
                 # name frame based on video
                 video_name = os.path.splitext(videofile)[0]
                 filename = '{}_frame_{}'.format(video_name, frame_number)
-                save_path_img = os.path.join(output_folder, folder + '_IMG', filename)
-                save_path_txt = os.path.join(output_folder, folder + '_TXT', filename)
+                save_path_img = os.path.join(output_folder, folder + IMG_FOLDER_EXT, filename)
+                save_path_txt = os.path.join(output_folder, folder + TXT_FOLDER_EXT, filename)
                 
                 # save frame as image + gesture code as txt
                 cv2.imwrite(save_path_img + '.jpg', image)
@@ -126,10 +131,10 @@ def main():
         # Create output folders
         if not os.path.isdir(os.path.join(output_folder)):
             os.mkdir(output_folder)
-        if not os.path.isdir(os.path.join(output_folder, folder + '_IMG')):
-            os.mkdir(os.path.join(output_folder, folder + '_IMG'))
-        if not os.path.isdir(os.path.join(output_folder, folder + '_TXT')):
-            os.mkdir(os.path.join(output_folder, folder + '_TXT'))
+        if not os.path.isdir(os.path.join(output_folder, folder + IMG_FOLDER_EXT)):
+            os.mkdir(os.path.join(output_folder, folder + IMG_FOLDER_EXT))
+        if not os.path.isdir(os.path.join(output_folder, folder + TXT_FOLDER_EXT)):
+            os.mkdir(os.path.join(output_folder, folder + TXT_FOLDER_EXT))
         get_frames(folder)
 
 # ----------------------------------------------
