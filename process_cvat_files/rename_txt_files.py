@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+
+# SCRIPT 1/3 FOR PROCESSING CVAT
+
 import os
 
 

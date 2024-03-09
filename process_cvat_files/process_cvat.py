@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+
+# SCRIPT 2/3 FOR PROCESSING CVAT
+
 import os
 
 
@@ -10,7 +13,7 @@ def dirname_to_lowercase(cvat_dir):
 def get_gesture_val(filepath):
     with open(filepath) as file:
         gesture_val = int(file.readline().strip())
-    # Set -1 vals to be non-washing
+    # Set -1 vals to be 0 for non-washing
     if gesture_val == -1:
         gesture_val = 0
     return gesture_val
@@ -29,6 +32,7 @@ def update_cvat_file(cvat_file_path, gesture_val):
             updated_lines.append(' '.join(label_line) + '\n')
 
     # Overwrite file with updated lines
+    # Will be appropriate gesture val (is-washing), empty file (non-washing), or 0 (unknown gesture)
     with open(cvat_file_path, 'w') as file:
         file.writelines(updated_lines)
 
