@@ -7,8 +7,7 @@
 import cv2
 import os
 import json
-# print("Current working directory:", os.getcwd())
-# Change these directories to your own locations
+
 input_folder = './PSKUS_dataset'
 output_folder = './PSKUS_dataset_preprocessed'
 
