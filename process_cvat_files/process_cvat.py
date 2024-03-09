@@ -16,9 +16,9 @@ def get_gesture_val(filepath):
     return gesture_val
 
 
-def update_cvat_file(cvat_filepath, gesture_val):
+def update_cvat_file(cvat_file_path, gesture_val):
     updated_lines = []
-    with open(cvat_filepath, 'r') as file:
+    with open(cvat_file_path, 'r') as file:
         lines = file.readlines()
 
     for line in lines:
@@ -29,7 +29,7 @@ def update_cvat_file(cvat_filepath, gesture_val):
             updated_lines.append(' '.join(label_line) + '\n')
 
     # Overwrite file with updated lines
-    with open(cvat_filepath, 'w') as file:
+    with open(cvat_file_path, 'w') as file:
         file.writelines(updated_lines)
 
 
@@ -38,27 +38,27 @@ def process_cvat_files(cvat_dir, pub_dir_txt):
         print(f"Error: One or both of the directories ({cvat_dir} and {pub_dir_txt}) not found.")
         return
     
-    for pub_filename in os.listdir(pub_dir_txt):
-        if not pub_filename.endswith('.txt'):
-            print(f"{pub_filename} is not a txt. Continuing..")
+    for pub_file_name in os.listdir(pub_dir_txt):
+        if not pub_file_name.endswith('.txt'):
+            print(f"{pub_file_name} is not a txt. Continuing..")
             continue
 
-        pub_filepath = os.path.join(pub_dir_txt, pub_filename)
+        pub_file_path = os.path.join(pub_dir_txt, pub_file_name)
         
-        if not os.path.isfile(pub_filepath):
-            print(f"{pub_filepath} does not exist. Continuing..")
+        if not os.path.isfile(pub_file_path):
+            print(f"{pub_file_path} does not exist. Continuing..")
             continue
 
-        gesture_val = get_gesture_val(pub_filepath)
+        gesture_val = get_gesture_val(pub_file_path)
 
         # Find matching file in cvat directory
-        cvat_filename = os.path.splitext(os.path.splitext(pub_filename)[0])[0]
-        cvat_filepath = os.path.join(cvat_dir, cvat_filename + '.txt')
+        cvat_file_name = os.path.splitext(os.path.splitext(pub_file_name)[0])[0]
+        cvat_file_path = os.path.join(cvat_dir, cvat_file_name + '.txt')
 
-        if os.path.isfile(cvat_filepath):
-            update_cvat_file(cvat_filepath, gesture_val)
+        if os.path.isfile(cvat_file_path):
+            update_cvat_file(cvat_file_path, gesture_val)
         else:
-            print(f'{cvat_filepath} not found.')
+            print(f'{cvat_file_path} not found.')
     print(f"Value changes successful for {cvat_dir}!")
 
 
