@@ -15,14 +15,14 @@ Comment in/out the datasets you want to download, unzip, and process. We will be
 
 ## Part 2. Modifying frame annotation values
 4. Create a directory called 'CVAT_dataset' in the main directory of the project (i.e. next to PSKUS_dataset and PSKUS_dataset_preprocessed)
-4. Download and extract your CVAT datasets into their own folders within CVAT_dataset.
-5. Rename each folder to this format: 'CVATDataSet#' (eg. CVATDataSet1).
-6. Go in the process_cvat_files directory where you will find three scripts: rename_txt_files.py, process_cvat.py, and filter_not_washing.py
-### To ensure the scripts work, please make sure the CVAT and pub datasets have equal number of img/txt files after  before further processing.
+5. Download and extract your CVAT datasets into their own folders within CVAT_dataset.
+6. Rename each folder to this format: 'CVATDataSet#' (eg. CVATDataSet1).
+7. Go in the process_cvat_files directory where you will find three scripts: rename_txt_files.py, process_cvat.py, and filter_not_washing.py
+#### NOTE: To ensure the scripts work, please make sure the CVAT and pub datasets have equal number of img/txt files after  before further processing.
 #### IMPORTANT: The scripts in step5 need to be executed in the correct sequence. Follow the steps below
-7. Run ```python rename_txt_files.py```
-8. Run ```python process_cvat.py```
-9. Run ```python filter_not_washing.py```
+8. Run ```python rename_txt_files.py```
+9. Run ```python process_cvat.py```
+10. Run ```python filter_not_washing.py```
 
 
 ## Final Output / Desired Data
