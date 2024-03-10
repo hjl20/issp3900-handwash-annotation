@@ -107,6 +107,12 @@ def main():
         pub_dir = f"../PSKUS_dataset_preprocessed/DataSet{i}"
 
         process_cvat_files(cvat_dir, pub_dir)
+    
+    print("Cleaning up processed dataset folders..")
+    for i in ranges:
+        shutil.rmtree(f"../CVAT_dataset/CVATDataSet{i}")
+    shutil.rmtree("../PSKUS_dataset_preprocessed")
+    print("Clean up completed!")
 
 
 main()
