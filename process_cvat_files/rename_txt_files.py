@@ -33,8 +33,11 @@ def sort_by_frame_timestamp(pub_file_list):
 
 def rename_txt_files(cvat_dir, pub_dir_txt):
     # Check if directories exist
-    if not os.path.isdir(cvat_dir) or not os.path.isdir(pub_dir_txt):
-        print(f"Error: One or both of the directories ({cvat_dir} and {pub_dir_txt}) not found.")
+    if not os.path.isdir(cvat_dir): 
+        print(f"Error: {cvat_dir} not found.")
+        return
+    if not os.path.isdir(pub_dir_txt):
+        print(f"Error: {pub_dir_txt} not found.")
         return
 
     # Get sorted lists of txt files for CVAT and PUB directory
