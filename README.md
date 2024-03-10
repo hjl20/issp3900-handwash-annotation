@@ -6,7 +6,8 @@ This repo contains scripts to split PSKUS videos into frames and save the frame'
 ## Part 1a. How to use w/ bash script
 Comment in/out the datasets you want to download, unzip, and process. We will be using datasets 1, 3, 4, and 5.
 1. Install the dependencies by running ```pip install -r requirements.txt```.
-2. Run ```./get-and-process-dataset.sh``` in terminal and the rest will be done for you.
+2. Run ```sed -i -e 's/\r$//' <scriptname>``` in terminal. Replace <scriptname> with the scripts in this repo. This would include ```separate-frames.py```, ```rename_txt_files.py```, ```process_cvat.py```, ```filter_not_washing.py```, and ```split_data.py```.
+3. Run ```./get-and-preprocess-dataset.sh``` in terminal and the rest will be done for you.
 
 ## Part 1b. How to use w/o bash script
 1. Install the dependencies by running ```pip install -r requirements.txt```.

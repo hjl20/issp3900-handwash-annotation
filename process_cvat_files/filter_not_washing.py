@@ -36,7 +36,7 @@ def filter_not_washing(cvat_dir, pub_dir_img):
 def main():
     ranges = [1, 3, 4, 5]
     for i in ranges:
-        cvat_dir = f"../CVAT_dataset/CVATDataSet{i}/obj_Train_data"
+        cvat_dir = f"../CVAT_dataset/CVATDataSet{i}/obj_train_data"
         pub_dir_img = f"../PSKUS_dataset_preprocessed/DataSet{i}_IMG"
         filter_not_washing(cvat_dir, pub_dir_img)
 

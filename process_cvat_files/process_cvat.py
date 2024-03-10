@@ -4,10 +4,19 @@
 
 import os
 
-
 def dirname_to_lowercase(cvat_dir):
     if os.path.isdir(cvat_dir):
-        os.rename(os.path.join(cvat_dir), os.path.join(cvat_dir).lower())
+        # Get the current folder name
+        folder_name = os.path.basename(cvat_dir)
+
+        # Create the new lowercase folder name
+        new_folder_name = folder_name.lower()
+
+        # Construct the new folder path
+        new_folder_path = os.path.join(os.path.dirname(cvat_dir), new_folder_name)
+
+        # Rename the folder
+        os.rename(cvat_dir, new_folder_path)
 
 
 def get_gesture_val(filepath):
@@ -69,12 +78,8 @@ def process_cvat_files(cvat_dir, pub_dir_txt):
 # Process files in pub directory and update corresponding cvat files
 def main():
     ranges = [1, 3, 4, 5]
+
     for i in ranges:
-
-        # Directory name validation check
-        cvat_dir = f"../CVAT_dataset/CVATDataSet{i}/obj_Train_data"
-        dirname_to_lowercase(cvat_dir)
-
         cvat_dir = f"../CVAT_dataset/CVATDataSet{i}/obj_train_data"
         pub_dir_txt = f"../PSKUS_dataset_preprocessed/DataSet{i}_TXT"
 

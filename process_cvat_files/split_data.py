@@ -2,8 +2,9 @@
 Create a new folder called "Training_and_Validation_Data" in the same directory as the PSKUS_dataset_preprocessed and CVAT_dataset folders
 Will have the following structure:
     Training_and_Validation_Data
-        |-- IMG
-        |-- TXT
+        |-- TRAIN    
+            |-- IMG
+            |-- TXT
         |-- VAL
             |-- IMG
             |-- TXT
@@ -96,9 +97,9 @@ def main():
     ranges = [1, 3, 4, 5]
     for i in ranges:
         cvat_source_dir = f"../CVAT_dataset/CVATDataSet{i}/obj_train_data"
-        cvat_dest_dir = f"../Training_and_Validation_Data/TXT"
+        cvat_dest_dir = f"../Training_and_Validation_Data/TRAIN/TXT"
         pub_source_dir = f"../PSKUS_dataset_preprocessed/DataSet{i}_IMG"
-        pub_dest_dir = f"../Training_and_Validation_Data/IMG"
+        pub_dest_dir = f"../Training_and_Validation_Data/TRAIN/IMG"
         val_img_dest_dir = f"../Training_and_Validation_Data/VAL/IMG"
         val_txt_dest_dir = f"../Training_and_Validation_Data/VAL/TXT"
 

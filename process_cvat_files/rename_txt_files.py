@@ -5,6 +5,20 @@
 import os
 
 
+def dirname_to_lowercase(cvat_dir):
+    if os.path.isdir(cvat_dir):
+        # Get the current folder name
+        folder_name = os.path.basename(cvat_dir)
+
+        # Create the new lowercase folder name
+        new_folder_name = folder_name.lower()
+
+        # Construct the new folder path
+        new_folder_path = os.path.join(os.path.dirname(cvat_dir), new_folder_name)
+
+        # Rename the folder
+        os.rename(cvat_dir, new_folder_path)
+
 def get_sorted_files(directory, ext=None):
     if ext:
         files = [entry.name for entry in os.scandir(directory) if entry.is_file() and entry.name.endswith(ext)]
@@ -49,7 +63,11 @@ def main():
     ranges = [1, 3, 4, 5]
 
     for i in ranges:
+        # Directory name validation check
         cvat_dir = f"../CVAT_dataset/CVATDataSet{i}/obj_Train_data"
+        dirname_to_lowercase(cvat_dir)
+
+        cvat_dir = f"../CVAT_dataset/CVATDataSet{i}/obj_train_data"
         pub_dir_txt = f"../PSKUS_dataset_preprocessed/DataSet{i}_TXT"
         rename_txt_files(cvat_dir, pub_dir_txt)
 
