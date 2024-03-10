@@ -110,8 +110,12 @@ def main():
     
     print("Cleaning up processed dataset folders..")
     for i in ranges:
-        shutil.rmtree(f"../CVAT_dataset/CVATDataSet{i}")
-    shutil.rmtree("../PSKUS_dataset_preprocessed")
+        if os.path.isdir(f"../CVAT_dataset/CVATDataSet{i}"):
+            shutil.rmtree(f"../CVAT_dataset/CVATDataSet{i}")
+        if os.path.isdir(f"../CVAT_dataset/0"):
+            shutil.rmtree(f"../CVAT_dataset/0")
+        if os.path.isdir("../PSKUS_dataset_preprocessed"):
+            shutil.rmtree("../PSKUS_dataset_preprocessed")
     print("Clean up completed!")
 
 
