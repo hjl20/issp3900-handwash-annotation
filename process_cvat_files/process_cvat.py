@@ -4,21 +4,6 @@
 
 import os
 
-def dirname_to_lowercase(cvat_dir):
-    if os.path.isdir(cvat_dir):
-        # Get the current folder name
-        folder_name = os.path.basename(cvat_dir)
-
-        # Create the new lowercase folder name
-        new_folder_name = folder_name.lower()
-
-        # Construct the new folder path
-        new_folder_path = os.path.join(os.path.dirname(cvat_dir), new_folder_name)
-
-        # Rename the folder
-        os.rename(cvat_dir, new_folder_path)
-
-
 def get_gesture_val(filepath):
     with open(filepath) as file:
         gesture_val = int(file.readline().strip())

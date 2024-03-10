@@ -4,7 +4,6 @@
 
 import os
 
-
 def dirname_to_lowercase(cvat_dir):
     if os.path.isdir(cvat_dir):
         # Get the current folder name
