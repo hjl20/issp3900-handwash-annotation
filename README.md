@@ -6,7 +6,7 @@ This repo contains scripts to split PSKUS videos into frames and save the frame'
 ## Part 1a. How to use w/ bash script
 Comment in/out the datasets you want to download, unzip, and process. We will be using datasets 1, 3, 4, and 5.
 1. Install the dependencies by running ```pip install -r requirements.txt```.
-2. Run ```sed -i -e 's/\r$//' <scriptname>``` in terminal. Replace <scriptname> with the scripts in this repo. This would include ```separate-frames.py```, ```rename_txt_files.py```, ```process_cvat.py```, ```filter_not_washing.py```, and ```split_data.py```.
+2. Run ```sed -i -e 's/\r$//' <scriptname>``` in terminal. Replace <scriptname> with the scripts in this repo. This would include ```separate-frames.py```, ```rename_txt_files.py```, ```process_cvat.py```, and ```split_data.py```.
 3. Run ```./get-and-preprocess-dataset.sh``` in terminal and the rest will be done for you.
 
 ## Part 1b. How to use w/o bash script
@@ -18,18 +18,20 @@ Comment in/out the datasets you want to download, unzip, and process. We will be
 4. Create a directory called 'CVAT_dataset' in the main directory of the project (i.e. next to PSKUS_dataset and PSKUS_dataset_preprocessed)
 5. Download and extract your CVAT datasets into their own folders within CVAT_dataset.
 6. Rename each folder to this format: 'CVATDataSet#' (eg. CVATDataSet1).
-7. Go in the process_cvat_files directory where you will find three scripts: rename_txt_files.py, process_cvat.py, and filter_not_washing.py
-#### NOTE: To ensure the scripts work, please make sure the CVAT and pub datasets have equal number of img/txt files after  before further processing.
+7. Go in the process_cvat_files directory where you will find two scripts: rename_txt_files.py and process_cvat.py
+#### NOTE: To ensure the scripts work, please make sure the CVAT and pub datasets have equal number of img/txt files after separate-frames.py before further processing.
 #### IMPORTANT: The scripts in step5 need to be executed in the correct sequence. Follow the steps below
 8. Run ```python rename_txt_files.py```
 9. Run ```python process_cvat.py```
-10. Run ```python filter_not_washing.py```
+
+## Part 3. Splitting dataset into training and validation data
+10. Run ```split_data.py```
 
 
 ## Final Output / Desired Data
 The processed images and annotations used for training the machine learning model will be stored within the following folders (# being the number of the set processed) 
-1. CVAT_dataset/CVATDataSet# (annotations) 
-2. PSKUS_dataset_preprocessed/DataSet#_IMG (images)
+1. ./Training_and_Validation_Data/TRAIN (annotations and images in subfolders) 
+2. ./Training_and_Validation_Data/VAL (annotations and images in subfolders) 
 
 
 ## Credits and References

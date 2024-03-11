@@ -1,74 +1,85 @@
 #!/usr/bin/env python3
 
-# SCRIPT 1/3 FOR PROCESSING CVAT
+# SCRIPT 1/2 FOR PROCESSING CVAT
 
 import os
 
-def dirname_to_lowercase(cvat_dir):
-    if os.path.isdir(cvat_dir):
-        # Get the current folder name
-        folder_name = os.path.basename(cvat_dir)
+# Paths in script are defined from prj root directory (i.e. issp3900-handwash-annotation folder)
+# Change to your input folder paths if different
+input_cvat_folder = './CVAT_dataset'
+input_pub_folder = './PSKUS_dataset_preprocessed'
 
-        # Create the new lowercase folder name
+CVAT_SUBFOLDER_PREFIX = 'CVATDataSet'
+PUB_SUBFOLDER_PREFIX = 'DataSet'
+PUB_SUBFOLDER_SUFFIX = '_TXT'
+
+
+def dirname_to_lowercase(dir):
+    if os.path.isdir(dir):
+        folder_name = os.path.basename(dir)
         new_folder_name = folder_name.lower()
+        new_folder_path = os.path.join(os.path.dirname(dir), new_folder_name)
+        os.rename(dir, new_folder_path)
+        return new_folder_path
 
-        # Construct the new folder path
-        new_folder_path = os.path.join(os.path.dirname(cvat_dir), new_folder_name)
 
-        # Rename the folder
-        os.rename(cvat_dir, new_folder_path)
-
-def get_sorted_files(directory, ext=None):
-    if ext:
-        files = [entry.name for entry in os.scandir(directory) if entry.is_file() and entry.name.endswith(ext)]
-    else:
-        files = [entry.name for entry in os.scandir(directory) if entry.is_file()]
-    return sorted(files)
+def get_sorted_txt_files(dir):
+    return sorted([entry.name for entry in os.scandir(dir) if entry.is_file() and entry.name.endswith('.txt')])
 
 
 # Function to custom sort PUB files based on timestamp and frame number
-def sort_by_frame_timestamp(pub_file_list):
-    return sorted(pub_file_list, key=lambda x: (x.split('_frame_')[0], int(x.split('_frame_')[-1].split('.')[0])))
+def sort_by_timestamp_frame(file_list):
+    return sorted(file_list, key=lambda x: (x.split('_frame_')[0], int(x.split('_frame_')[-1].split('.')[0])))
 
 
-def rename_txt_files(cvat_dir, pub_dir_txt):
-    # Check if directories exist
-    if not os.path.isdir(cvat_dir) or not os.path.isdir(pub_dir_txt):
-        print(f"Error: One or both of the directories ({cvat_dir} and {pub_dir_txt}) not found.")
+def rename_annotation_files(cvat_txt_dir, pub_txt_dir):
+    if not os.path.isdir(cvat_txt_dir): 
+        print(f"Error: {cvat_txt_dir} not found.")
+        return
+    if not os.path.isdir(pub_txt_dir):
+        print(f"Error: {pub_txt_dir} not found.")
         return
 
-    # Get sorted lists of txt files for CVAT and PUB directory
-    cvat_files = get_sorted_files(cvat_dir, '.txt')
-    pub_files = sort_by_frame_timestamp(get_sorted_files(pub_dir_txt, '.txt'))
+    # Sort to enforce proper ordering of frames
+    cvat_files = get_sorted_txt_files(cvat_txt_dir)
+    pub_files = sort_by_timestamp_frame(get_sorted_txt_files(pub_txt_dir))
 
-    # Iterate as many files as are in both sets
-    for i in range(min(len(cvat_files), len(pub_files))):
+    # Validation count of frames 
+    if len(cvat_files) != len(pub_files):
+        print(f"Error: number of frames is not equal between directories (CVAT: {len(cvat_files)} vs PUB: {len(pub_files)})")
+        return
+
+    for i in range(len(cvat_files)):
         cvat_file = cvat_files[i]
         pub_file = pub_files[i]
 
         # Create new file name with the same extension as the PUB file
-        pub_file_parts = pub_file.split('.')
-        extension = pub_file_parts[-1]
-        new_cvat_file_name = os.path.join(cvat_dir, pub_file_parts[0] + '.' + extension)
+        file_name, ext = os.path.splitext(pub_file)
+        new_cvat_file_name = os.path.join(cvat_txt_dir, file_name + ext)
 
         # Rename the file
-        curr_cvat_file_path = os.path.join(cvat_dir, cvat_file)
+        curr_cvat_file_path = os.path.join(cvat_txt_dir, cvat_file)
         os.rename(curr_cvat_file_path, new_cvat_file_name)
 
-    print(f"Renamed files successfully for set {cvat_dir}!")
+    print(f"Renamed files successfully for {os.path.dirname(cvat_txt_dir)}!")
 
 
 def main():
-    ranges = [1, 3, 4, 5]
+    # Enforce paths are based on prj root dir
+    if os.path.basename(os.getcwd()) == 'process_cvat_files':
+        os.chdir('..')
 
-    for i in ranges:
-        # Directory name validation check
-        cvat_dir = f"../CVAT_dataset/CVATDataSet{i}/obj_Train_data"
-        dirname_to_lowercase(cvat_dir)
+    # Get dataset #s and process
+    cvat_subfolder_list = [d for d in os.listdir(input_cvat_folder) if os.path.isdir(os.path.join(input_cvat_folder, d))]
+    set_numbers = [int(folder.removeprefix(CVAT_SUBFOLDER_PREFIX)) for folder in cvat_subfolder_list]
+    for num in sorted(set_numbers):
+        cvat_txt_dir = os.path.join(input_cvat_folder, CVAT_SUBFOLDER_PREFIX + str(num), "obj_Train_data")
+        pub_txt_dir = os.path.join(input_pub_folder, PUB_SUBFOLDER_PREFIX + str(num) + PUB_SUBFOLDER_SUFFIX)
 
-        cvat_dir = f"../CVAT_dataset/CVATDataSet{i}/obj_train_data"
-        pub_dir_txt = f"../PSKUS_dataset_preprocessed/DataSet{i}_TXT"
-        rename_txt_files(cvat_dir, pub_dir_txt)
+        # Context: folders vary from obj_Train_data and obj_train_data, so lower to prevent errors 
+        cvat_txt_dir = dirname_to_lowercase(cvat_txt_dir)
+        
+        rename_annotation_files(cvat_txt_dir, pub_txt_dir)
 
 
 main()

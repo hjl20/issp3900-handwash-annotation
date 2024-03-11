@@ -1,11 +1,23 @@
 #!/usr/bin/env python3
 
-# SCRIPT 2/3 FOR PROCESSING CVAT
+# SCRIPT 2/2 FOR PROCESSING CVAT
 
 import os
+import shutil
 
-def get_gesture_val(filepath):
-    with open(filepath) as file:
+# Paths in script are defined from prj root directory (i.e. issp3900-handwash-annotation folder)
+# Change to your input folder paths if different
+input_cvat_folder = './CVAT_dataset'
+input_pub_folder = './PSKUS_dataset_preprocessed'
+
+CVAT_SUBFOLDER_PREFIX = 'CVATDataSet'
+PUB_SUBFOLDER_PREFIX = 'DataSet'
+PUB_IMG_SUBFOLDER_SUFFIX = '_IMG'
+PUB_TXT_SUBFOLDER_SUFFIX = '_TXT'
+
+
+def get_gesture_val(file_path):
+    with open(file_path) as file:
         gesture_val = int(file.readline().strip())
     # Set -1 vals to be 0 for non-washing
     if gesture_val == -1:
@@ -13,9 +25,12 @@ def get_gesture_val(filepath):
     return gesture_val
 
 
-def update_cvat_file(cvat_file_path, gesture_val):
+def update_cvat_file(cvat_txt_file_path, gesture_val):
+    # Default: empty files are put in gesture 0 subfolder
     updated_lines = []
-    with open(cvat_file_path, 'r') as file:
+    gesture_subfolder = '0'
+
+    with open(cvat_txt_file_path, 'r') as file:
         lines = file.readlines()
 
     for line in lines:
@@ -23,52 +38,103 @@ def update_cvat_file(cvat_file_path, gesture_val):
         # Only keep washing vals and convert to gesture val
         if len(label_line) > 0 and float(label_line[0]) == 0:
             label_line[0] = str(gesture_val)
+            gesture_subfolder = str(gesture_val)
             updated_lines.append(' '.join(label_line) + '\n')
 
     # Overwrite file with updated lines
     # Will be appropriate gesture val (is-washing), empty file (non-washing), or 0 (unknown gesture)
-    with open(cvat_file_path, 'w') as file:
+    with open(cvat_txt_file_path, 'w') as file:
         file.writelines(updated_lines)
 
+    return gesture_subfolder
 
-def process_cvat_files(cvat_dir, pub_dir_txt):
-    if not os.path.isdir(cvat_dir) or not os.path.isdir(pub_dir_txt):
-        print(f"Error: One or both of the directories ({cvat_dir} and {pub_dir_txt}) not found.")
+
+def move_file_to_subfolder(file_path, subfolder_path):
+    file_dest_path = os.path.join(subfolder_path, os.path.basename(file_path))
+    shutil.move(file_path, file_dest_path)
+
+
+def process_cvat_files(cvat_dir, pub_dir):
+    cvat_txt_dir = os.path.join(cvat_dir, "obj_Train_data")
+    pub_txt_dir = pub_dir + PUB_TXT_SUBFOLDER_SUFFIX
+    pub_img_dir = pub_dir + PUB_IMG_SUBFOLDER_SUFFIX
+
+    if not os.path.isdir(cvat_txt_dir): 
+        print(f"Error: {cvat_txt_dir} not found.")
+        return
+    if not os.path.isdir(pub_txt_dir):
+        print(f"Error: {pub_txt_dir} not found.")
+        return
+    if not os.path.isdir(pub_img_dir):
+        print(f"Error: {pub_img_dir} not found.")
         return
     
-    for pub_file_name in os.listdir(pub_dir_txt):
-        if not pub_file_name.endswith('.txt'):
-            print(f"{pub_file_name} is not a txt. Continuing..")
+    for pub_txt_file_name in os.listdir(pub_txt_dir):
+        if not pub_txt_file_name.endswith('.txt'):
+            print(f"{pub_txt_file_name} is not a txt. Continuing..")
             continue
-
-        pub_file_path = os.path.join(pub_dir_txt, pub_file_name)
         
-        if not os.path.isfile(pub_file_path):
-            print(f"{pub_file_path} does not exist. Continuing..")
+        # Get img path to move with annotation later
+        pub_img_file_path = os.path.join(pub_img_dir, os.path.splitext(pub_txt_file_name)[0] + '.jpg')
+        pub_txt_file_path = os.path.join(pub_txt_dir, pub_txt_file_name)
+        
+        if not os.path.isfile(pub_txt_file_path):
+            print(f"{pub_txt_file_path} not found. Continuing..")
             continue
-
-        gesture_val = get_gesture_val(pub_file_path)
+        if not os.path.isfile(pub_img_file_path):
+            print(f"{pub_img_file_path} not found. Continuing..")
+            continue
 
         # Find matching file in cvat directory
-        cvat_file_name = os.path.splitext(os.path.splitext(pub_file_name)[0])[0]
-        cvat_file_path = os.path.join(cvat_dir, cvat_file_name + '.txt')
+        file_name, ext = os.path.splitext(pub_txt_file_name)
+        cvat_txt_file_path = os.path.join(cvat_txt_dir, file_name + ext)
+        
+        if not os.path.isfile(cvat_txt_file_path):
+            print(f'{cvat_txt_file_path} not found. Continuing..')
 
-        if os.path.isfile(cvat_file_path):
-            update_cvat_file(cvat_file_path, gesture_val)
-        else:
-            print(f'{cvat_file_path} not found.')
-    print(f"Value changes successful for {cvat_dir}!")
+        gesture_val = str(get_gesture_val(pub_txt_file_path))
+        # Get updated val to sort into subfolders. Gesture can change to 0 if label update is non-washing/empty file
+        updated_gesture_val = update_cvat_file(cvat_txt_file_path, gesture_val)
+
+        # Create subfolders to group same gesture files
+        cvat_txt_dir_subpath = os.path.join(os.path.dirname(cvat_dir), updated_gesture_val)
+        if not os.path.isdir(cvat_txt_dir_subpath):
+            os.mkdir(cvat_txt_dir_subpath)
+
+        # We will move it to a subfolder based on gesture val
+        move_file_to_subfolder(cvat_txt_file_path, cvat_txt_dir_subpath)
+        move_file_to_subfolder(pub_img_file_path, cvat_txt_dir_subpath)
+
+    print(f"Modified gesture values successfully for {os.path.dirname(cvat_txt_dir)}!")
 
 
 # Process files in pub directory and update corresponding cvat files
 def main():
-    ranges = [1, 3, 4, 5]
+    # Enforce paths are based on prj root dir
+    if os.path.basename(os.getcwd()) == 'process_cvat_files':
+        os.chdir('..')
+        
+    # Get dataset #s and process
+    cvat_subfolder_list = [d for d in os.listdir(input_cvat_folder) if os.path.isdir(os.path.join(input_cvat_folder, d))]
+    set_numbers = [int(folder.removeprefix(CVAT_SUBFOLDER_PREFIX)) for folder in cvat_subfolder_list]
+    for num in sorted(set_numbers):
+        cvat_txt_dir = os.path.join(input_cvat_folder, CVAT_SUBFOLDER_PREFIX + str(num))
+        pub_img_dir = os.path.join(input_pub_folder, PUB_SUBFOLDER_PREFIX + str(num))
 
-    for i in ranges:
-        cvat_dir = f"../CVAT_dataset/CVATDataSet{i}/obj_train_data"
-        pub_dir_txt = f"../PSKUS_dataset_preprocessed/DataSet{i}_TXT"
-
-        process_cvat_files(cvat_dir, pub_dir_txt)
+        process_cvat_files(cvat_txt_dir, pub_img_dir)
+    
+    # Delete unneeded folders from previous steps
+    print("Cleaning up processed dataset folders..")
+    for num in set_numbers:
+        cvat_processed_dir = os.path.join(input_cvat_folder, CVAT_SUBFOLDER_PREFIX + str(num))
+        if os.path.isdir(cvat_processed_dir):
+            shutil.rmtree(cvat_processed_dir)
+    cvat_discard_dir = os.path.join(input_cvat_folder, '0')
+    if os.path.isdir(cvat_discard_dir):
+        shutil.rmtree(cvat_discard_dir)
+    if os.path.isdir(input_pub_folder):
+        shutil.rmtree(input_pub_folder)
+    print("Clean up completed!")
 
 
 main()
