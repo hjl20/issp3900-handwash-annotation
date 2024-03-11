@@ -24,6 +24,7 @@ OUTPUT_TRAIN_FOLDER = 'TRAIN'
 OUTPUT_VAL_FOLDER = 'VAL'
 OUTPUT_IMG_SUBFOLDER = 'IMG'
 OUTPUT_TXT_SUBFOLDER = 'TXT'
+VAL_SPLIT_RATIO = 0.2
 
 
 # create the training and validation directories
@@ -43,33 +44,36 @@ def create_train_split_folders(output_folder):
                 os.mkdir(os.path.join(output_folder, subfolder, subsubfolder))
     
 
-def create_val_data(source_dir, dest_dir):
+def split_val_data(source_dir, dest_dir):
     cvat_file_names = os.listdir(source_dir)
-    random.shuffle(cvat_file_names)
     
-    # # look for all the txt files in the directory
-    # txt_file = [file for file in cvat_file_names if file.endswith('.txt')]
-    # val_percent = int(len(cvat_file_names)*0.2)
-    
+    # Only get % of frame pairs (dir has both img and txt of frame, so only get % of one type eg. txt)
+    txt_files = [os.path.splitext(file)[0] for file in cvat_file_names]
+    frame_pairs = [(frame_name + '.txt', frame_name + '.jpg') for frame_name in set(txt_files)]
+    val_percent = int(len(frame_pairs) * VAL_SPLIT_RATIO)
+    random.shuffle(frame_pairs)
 
-    # for cvat_file in txt_file[:val_percent]:
-    #     # txt file path
-    #     cvat_file_path = os.path.join(source_dir, cvat_file)
-    #     # find corresponding image file
-    #     file_name = os.path.splitext(cvat_file)[0]
-    #     img_file = file_name + ".jpg"
+    for pair in frame_pairs[:val_percent]:
+        txt_file_path = os.path.join(source_dir, pair[0])
+        img_file_path = os.path.join(source_dir, pair[1])
+        if not pair[0] in cvat_file_names:
+            print(f'{pair[0]} not found. Continuing..')
+            continue
+        if not pair[1] in cvat_file_names:
+            print(f'{pair[1]} not found. Continuing..')
+            continue
         
-    #     if img_file in cvat_file_names:
-    #         img_file_path = os.path.join(source_dir, img_file)
+        # if img_file in cvat_file_names:
+        #     img_file_path = os.path.join(source_dir, img_file)
             
-    #         # move txt file to val directory
-    #         shutil.move(cvat_file_path, txt_dest_dir)
-    #         # print statements for testing
-    #         # print(f"Moved {cvat_file} to {txt_dest_dir}")
+        #     # move txt file to val directory
+        #     shutil.move(cvat_file_path, txt_dest_dir)
+        #     # print statements for testing
+        #     # print(f"Moved {cvat_file} to {txt_dest_dir}")
 
-    #         # move img file to val directory
-    #         shutil.move(img_file_path, img_dest_dir)
-    #         # print(f"Moved {img_file} to {img_dest_dir}")
+        #     # move img file to val directory
+        #     shutil.move(img_file_path, img_dest_dir)
+        #     # print(f"Moved {img_file} to {img_dest_dir}")
 
     # print(f"Validation data created successfully!")
 
@@ -127,7 +131,7 @@ def main():
     for num in sorted(cvat_subfolder_list):
         cvat_source_dir = os.path.join(input_cvat_folder, str(num))
         print(f"Creating validation data for {cvat_source_dir}..")
-        create_val_data(cvat_source_dir, output_folder)
+        split_val_data(cvat_source_dir, os.path.join(output_folder, OUTPUT_VAL_FOLDER))
         
     # for i in ranges:
     #     cvat_source_dir = f"../CVAT_dataset/{i}"
