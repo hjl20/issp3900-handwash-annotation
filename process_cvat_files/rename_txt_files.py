@@ -20,6 +20,8 @@ def dirname_to_lowercase(dir):
         new_folder_path = os.path.join(os.path.dirname(dir), new_folder_name)
         os.rename(dir, new_folder_path)
         return new_folder_path
+    else:
+        return dir
 
 
 def get_sorted_txt_files(dir):
