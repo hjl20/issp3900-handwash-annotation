@@ -116,6 +116,8 @@ def main():
     cvat_subfolder_list = [d for d in os.listdir(input_cvat_folder) if os.path.isdir(os.path.join(input_cvat_folder, d))]
     for num in sorted(cvat_subfolder_list):
         cvat_src_dir = os.path.join(input_cvat_folder, str(num))
+
+        print(f"Splitting set {num}..")
         split_to_train_val(cvat_src_dir, output_folder)
     
     # Delete unneeded folders from previous steps
