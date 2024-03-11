@@ -32,8 +32,7 @@ def sort_by_timestamp_frame(file_list):
     return sorted(file_list, key=lambda x: (x.split('_frame_')[0], int(x.split('_frame_')[-1].split('.')[0])))
 
 
-def rename_txt_files(cvat_txt_dir, pub_txt_dir):
-    # Check if directories exist
+def rename_annotation_files(cvat_txt_dir, pub_txt_dir):
     if not os.path.isdir(cvat_txt_dir): 
         print(f"Error: {cvat_txt_dir} not found.")
         return
@@ -41,7 +40,7 @@ def rename_txt_files(cvat_txt_dir, pub_txt_dir):
         print(f"Error: {pub_txt_dir} not found.")
         return
 
-    # Get sorted lists of txt files for CVAT and PUB directory
+    # Sort to enforce proper ordering of frames
     cvat_files = get_sorted_txt_files(cvat_txt_dir)
     pub_files = sort_by_timestamp_frame(get_sorted_txt_files(pub_txt_dir))
 
@@ -55,9 +54,8 @@ def rename_txt_files(cvat_txt_dir, pub_txt_dir):
         pub_file = pub_files[i]
 
         # Create new file name with the same extension as the PUB file
-        pub_file_parts = pub_file.split('.')
-        extension = pub_file_parts[-1]
-        new_cvat_file_name = os.path.join(cvat_txt_dir, pub_file_parts[0] + '.' + extension)
+        file_name, ext = os.path.splitext(pub_file)
+        new_cvat_file_name = os.path.join(cvat_txt_dir, file_name + ext)
 
         # Rename the file
         curr_cvat_file_path = os.path.join(cvat_txt_dir, cvat_file)
@@ -71,13 +69,17 @@ def main():
     if os.path.basename(os.getcwd()) == 'process_cvat_files':
         os.chdir('..')
 
+    # Get dataset #s and process
     cvat_subfolder_list = [d for d in os.listdir(input_cvat_folder) if os.path.isdir(os.path.join(input_cvat_folder, d))]
     set_numbers = [int(folder.removeprefix(CVAT_SUBFOLDER_PREFIX)) for folder in cvat_subfolder_list]
     for num in sorted(set_numbers):
         cvat_txt_dir = os.path.join(input_cvat_folder, CVAT_SUBFOLDER_PREFIX + str(num), "obj_Train_data")
-        cvat_txt_dir = dirname_to_lowercase(cvat_txt_dir)
         pub_txt_dir = os.path.join(input_pub_folder, PUB_SUBFOLDER_PREFIX + str(num) + PUB_SUBFOLDER_SUFFIX)
-        rename_txt_files(cvat_txt_dir, pub_txt_dir)
+
+        # Context: folders vary from obj_Train_data and obj_train_data, so lower to prevent errors 
+        cvat_txt_dir = dirname_to_lowercase(cvat_txt_dir)
+        
+        rename_annotation_files(cvat_txt_dir, pub_txt_dir)
 
 
 main()
