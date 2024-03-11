@@ -2,12 +2,12 @@
 Create a new folder called "train_val_dataset" in the same directory as the PSKUS_dataset_preprocessed and CVAT_dataset folders
 Will have the following structure:
     train_val_dataset
-        |-- TRAIN    
-            |-- IMG
-            |-- TXT
-        |-- VAL
-            |-- IMG
-            |-- TXT
+        |-- train    
+            |-- images
+            |-- labels
+        |-- val
+            |-- images
+            |-- labels
 '''
 
 import os 
@@ -20,10 +20,10 @@ import random
 input_cvat_folder = './CVAT_dataset'
 output_folder = './train_val_dataset'
 
-OUTPUT_TRAIN_FOLDER = 'TRAIN'
-OUTPUT_VAL_FOLDER = 'VAL'
-OUTPUT_IMG_SUBFOLDER = 'IMG'
-OUTPUT_TXT_SUBFOLDER = 'TXT'
+OUTPUT_TRAIN_FOLDER = 'train'
+OUTPUT_VAL_FOLDER = 'val'
+OUTPUT_IMG_SUBFOLDER = 'images'
+OUTPUT_TXT_SUBFOLDER = 'labels'
 VAL_SPLIT_RATIO = 0.2
 
 
@@ -56,8 +56,8 @@ def move_frame_pairs(pair, src_dir, dest_dir):
 
 def split_to_train_val(src_dir, dest_dir):
     '''
-    Note: If there are any duplicate files, shutil will throw an error, 
-            will need to add a try and except block to handle this
+    Note: If there are any duplicate files, shutil will throw an error.
+            TODO: add a try and except block to handle this
     '''
     dest_val_dir = os.path.join(dest_dir, OUTPUT_VAL_FOLDER)
     dest_train_dir = os.path.join(dest_dir, OUTPUT_TRAIN_FOLDER)
@@ -97,13 +97,18 @@ def split_to_train_val(src_dir, dest_dir):
 
         move_frame_pairs(pair, src_dir, dest_train_dir)
 
-    print(f"Validation data created successfully!")
+    print(f"Train/Val split successfully for {os.path.dirname(src_dir)}!")
 
 
 def main():
     # Enforce paths are based on prj root dir
+    count = 0
     while not os.path.basename(input_cvat_folder) in os.listdir(os.getcwd()):
         os.chdir('..')
+        count += 1
+        if count > 5:
+            print(f"Error: {os.path.basename(input_cvat_folder)} not found.")
+            return
     
     create_train_split_folders(output_folder)
 
@@ -112,8 +117,14 @@ def main():
 
     for num in sorted(cvat_subfolder_list):
         cvat_src_dir = os.path.join(input_cvat_folder, str(num))
-        print(f"Creating validation data for {cvat_src_dir}..")
         split_to_train_val(cvat_src_dir, output_folder)
+
+    
+    # Delete unneeded folders from previous steps
+    print("Cleaning up processed dataset folders..")
+    if os.path.isdir(input_cvat_folder):
+        shutil.rmtree(input_cvat_folder)
+    print("Clean up completed!")
 
 
 main()
