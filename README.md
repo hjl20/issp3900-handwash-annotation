@@ -50,7 +50,7 @@ Comment in/out the datasets you want to download, unzip, and process. We will be
 
 
 ## Final Output / Desired Data
-The processed images and annotations used for training the machine learning model will be stored within the following folders (# being the number of the set processed) 
+The processed images and annotations used for training the machine learning model will be stored within the following folders:
 - ```./train_val_dataset/train``` (annotations and images in subfolders) 
 - ```./train_val_dataset/val``` (annotations and images in subfolders) 
 
