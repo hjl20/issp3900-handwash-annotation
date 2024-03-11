@@ -111,7 +111,7 @@ def process_cvat_files(cvat_dir, pub_dir):
 # Process files in pub directory and update corresponding cvat files
 def main():
     # Enforce paths are based on prj root dir
-    if os.path.basename(os.getcwd()) == 'process_cvat_files':
+    while not os.path.basename(input_cvat_folder) in os.listdir(os.getcwd()):
         os.chdir('..')
         
     # Get dataset #s and process

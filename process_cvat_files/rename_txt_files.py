@@ -66,7 +66,7 @@ def rename_annotation_files(cvat_txt_dir, pub_txt_dir):
 
 def main():
     # Enforce paths are based on prj root dir
-    if os.path.basename(os.getcwd()) == 'process_cvat_files':
+    while not os.path.basename(input_cvat_folder) in os.listdir(os.getcwd()):
         os.chdir('..')
 
     # Get dataset #s and process
