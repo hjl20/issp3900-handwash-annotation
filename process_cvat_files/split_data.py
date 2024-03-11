@@ -26,88 +26,96 @@ def create_dirs(txt_dest_dir, img_dest_dir):
     
     
 # put all the CVAT txt files and PSKUS_dataset_preprocessed img files in the same directory
-def move_data_to_dir(txt_source_dir, txt_dest_dir, img_source_dir, img_dest_dir):
-    if not os.path.isdir(txt_source_dir) or not os.path.isdir(img_source_dir):
-        print(f"Error: One or both of the directories ({txt_source_dir} and {img_source_dir}) not found.")
+def move_data_to_dir(txt_source_dir, txt_dest_dir, img_dest_dir):
+    if not os.path.isdir(txt_source_dir):
+        print(f"Error: The directory ({txt_source_dir} not found.")
         return
-    print(f"Moving data from {txt_source_dir} and {img_source_dir} to {txt_dest_dir} and {img_dest_dir}...")
+    print(f"Moving data from {txt_source_dir} to {txt_dest_dir} and {img_dest_dir}...")
     # get the file names in the corresponding directories
     cvat_file_names = os.listdir(txt_source_dir)
-    pub_file_names = os.listdir(img_source_dir)
+
     
     # create the directories if they don't exist
     create_dirs(txt_dest_dir, img_dest_dir)
-    
+
+
     # move the files to the new directories
+    '''
+    Note: If there are any duplicate files, shutil will throw an error, will need to add a try and except block to handle this
+    '''
     for cvat_file in cvat_file_names:
-        cvat_file_path = os.path.join(txt_source_dir, cvat_file)
-        shutil.move(cvat_file_path, txt_dest_dir)
-        # remove later 
-        # print(f"Moved {cvat_file} to {txt_dest_dir}")
+        if cvat_file.endswith('.txt'):
+            cvat_txt_file_path = os.path.join(txt_source_dir, cvat_file)
+            shutil.move(cvat_txt_file_path, txt_dest_dir)
+            # remove later 
+            print(f"Moved {cvat_file} to {txt_dest_dir}")
+            
+        if cvat_file.endswith('.jpg'):
+            cvat_img_file_path = os.path.join(txt_source_dir, cvat_file)
+            shutil.move(cvat_img_file_path, img_dest_dir)
+            # remove later
+            print(f"Moved {cvat_file} to {img_dest_dir}")
         
         # delete folder after all files gone
         if not os.listdir(txt_source_dir):
-            parent_cvat_dir = os.path.dirname(txt_source_dir)
-            # have to use shutil.rmtree to remove dir since obj_train is inside
-            shutil.rmtree(parent_cvat_dir)
-            print(f"Deleting {parent_cvat_dir}...")
+            os.rmdir(txt_source_dir)
+            print(f"Deleting {txt_source_dir}...")
 
-    for pub_file in pub_file_names:
-        pub_file_path = os.path.join(img_source_dir, pub_file)
-        shutil.move(pub_file_path, img_dest_dir)
-        # remove later
-        # print(f"Moved {pub_file} to {img_dest_dir}")
-        
-        # delete folder after all files gone
-        if not os.listdir(img_source_dir):
-            os.rmdir(img_source_dir)
-            print(f"Deleting {img_source_dir}...")
         
     print(f"Data successfully moved to {txt_dest_dir} and {img_dest_dir}")
 
         
 
-def create_val_data(txt_source_dir, txt_dest_dir, img_source_dir, img_dest_dir):
+def create_val_data(source_dir, txt_dest_dir, img_dest_dir):
     create_dirs(txt_dest_dir, img_dest_dir)
-    cvat_file_names = os.listdir(txt_source_dir)
-    pub_file_names = os.listdir(img_source_dir)
+    cvat_file_names = os.listdir(source_dir)
     random.shuffle(cvat_file_names)
     
-    val_percent = int(math.ceil(len(cvat_file_names)*0.2))
+    # look for all the txt files in the directory
+    txt_file = [file for file in cvat_file_names if file.endswith('.txt')]
+    val_percent = int(len(cvat_file_names)*0.2)
     
-    for cvat_file in cvat_file_names[:val_percent]:
-        cvat_file_path = os.path.join(txt_source_dir, cvat_file)
-        shutil.move(cvat_file_path, txt_dest_dir)
-        # remove later
-        print(f"Moved {cvat_file} to {txt_dest_dir}")
+    # getting randomly 20% of data in directory
+    for cvat_file in txt_file[:val_percent]:
 
-        # split the file name to get the corresponding img
+        cvat_file_path = os.path.join(source_dir, cvat_file)
+
+        # find corresponding image file
         file_name = os.path.splitext(cvat_file)[0]
         #print(file_name)
-        pub_file = file_name + ".jpg"
-        if pub_file in pub_file_names:
-            pub_file_path = os.path.join(img_source_dir, pub_file)
-            shutil.move(pub_file_path, img_dest_dir)
-            print(f"Moved {pub_file} to {img_dest_dir}")
+        img_file = file_name + ".jpg"
+        if img_file in cvat_file_names:
+            img_file_path = os.path.join(source_dir, img_file)
+            
+            # move txt file to val directory
+            shutil.move(cvat_file_path, txt_dest_dir)
+            # can remove print statements
+            print(f"Moved {cvat_file} to {txt_dest_dir}")
+
+            # move img file to val directory
+            shutil.move(img_file_path, img_dest_dir)
+            print(f"Moved {img_file} to {img_dest_dir}")
 
     print(f"Validation data created successfully!")
 
 
 def main():
-    ranges = [1, 3, 4, 5]
+    ranges = range(1, 8)
     for i in ranges:
-        cvat_source_dir = f"../CVAT_dataset/CVATDataSet{i}/obj_train_data"
-        cvat_dest_dir = f"../Training_and_Validation_Data/TRAIN/TXT"
-        pub_source_dir = f"../PSKUS_dataset_preprocessed/DataSet{i}_IMG"
-        pub_dest_dir = f"../Training_and_Validation_Data/TRAIN/IMG"
+        cvat_source_dir = f"../CVAT_dataset/{i}"
         val_img_dest_dir = f"../Training_and_Validation_Data/VAL/IMG"
-        val_txt_dest_dir = f"../Training_and_Validation_Data/VAL/TXT"
+        val_txt_dest_dir = f"../Training_and_Validation_Data/VAL/TXT" 
+        cvat_txt_dest_dir = f"../Training_and_Validation_Data/TRAIN/TXT" 
+        cvat_img_dest_dir = f"../Training_and_Validation_Data/TRAIN/IMG"
 
-
-        move_data_to_dir(cvat_source_dir, cvat_dest_dir, pub_source_dir, pub_dest_dir)
-    
-    print(f"Creating validation data...")
-    create_val_data(cvat_dest_dir, val_txt_dest_dir, pub_dest_dir, val_img_dest_dir)
+        print(f"Creating validation data for {cvat_source_dir}...")
+        create_val_data(cvat_source_dir, val_txt_dest_dir, val_img_dest_dir)
+        
+    for i in ranges:
+        cvat_source_dir = f"../CVAT_dataset/{i}"
+        cvat_txt_dest_dir = f"../Training_and_Validation_Data/TRAIN/TXT" 
+        cvat_img_dest_dir = f"../Training_and_Validation_Data/TRAIN/IMG"
+        move_data_to_dir(cvat_source_dir, cvat_txt_dest_dir, cvat_img_dest_dir)
 
     
     
