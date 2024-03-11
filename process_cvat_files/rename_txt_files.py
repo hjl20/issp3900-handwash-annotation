@@ -65,8 +65,13 @@ def rename_annotation_files(cvat_txt_dir, pub_txt_dir):
 
 def main():
     # Enforce paths are based on prj root dir
+    count = 0
     while not os.path.basename(input_cvat_folder) in os.listdir(os.getcwd()):
         os.chdir('..')
+        count += 1
+        if count > 5:
+            print(f"Error: {os.path.basename(input_cvat_folder)} not found.")
+            return
 
     # Get dataset #s and process
     cvat_subfolder_list = [d for d in os.listdir(input_cvat_folder) if os.path.isdir(os.path.join(input_cvat_folder, d))]
