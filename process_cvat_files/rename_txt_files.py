@@ -1,11 +1,10 @@
-#!/usr/bin/env python3
-
 # SCRIPT 1/2 FOR PROCESSING CVAT
 
 import os
 
 # Paths in script are defined from prj root directory (i.e. issp3900-handwash-annotation folder)
 # Change to your input folder paths if different
+# Make sure they are BOTH in the same directory and at the prj root level
 input_cvat_folder = './CVAT_dataset'
 input_pub_folder = './PSKUS_dataset_preprocessed'
 

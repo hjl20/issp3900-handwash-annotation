@@ -1,4 +1,13 @@
-#!/usr/bin/env python3
+''' 
+Create subfolders to sort frames into based on gesture value 
+Will have the following structure:
+    input_cvat_folder
+        |-- 1    
+        |-- 2
+        |-- 3
+        ..
+        |-- 6
+'''
 
 # SCRIPT 2/2 FOR PROCESSING CVAT
 
@@ -7,6 +16,7 @@ import shutil
 
 # Paths in script are defined from prj root directory (i.e. issp3900-handwash-annotation folder)
 # Change to your input folder paths if different
+# Make sure they are BOTH in the same directory and at the prj root level
 input_cvat_folder = './CVAT_dataset'
 input_pub_folder = './PSKUS_dataset_preprocessed'
 
