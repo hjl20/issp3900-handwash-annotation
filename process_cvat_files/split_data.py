@@ -97,7 +97,7 @@ def split_to_train_val(src_dir, dest_dir):
 
         move_frame_pairs(pair, src_dir, dest_train_dir)
 
-    print(f"Train/Val split successfully for {os.path.dirname(src_dir)}!")
+    print(f"Train/Val split successfully for {src_dir}!")
 
 
 def main():
