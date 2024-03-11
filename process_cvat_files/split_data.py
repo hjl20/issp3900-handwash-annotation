@@ -1,7 +1,7 @@
 ''' 
-Create a new folder called "Training_and_Validation_Data" in the same directory as the PSKUS_dataset_preprocessed and CVAT_dataset folders
+Create a new folder called "train_val_dataset" in the same directory as the PSKUS_dataset_preprocessed and CVAT_dataset folders
 Will have the following structure:
-    Training_and_Validation_Data
+    train_val_dataset
         |-- TRAIN    
             |-- IMG
             |-- TXT
@@ -18,7 +18,7 @@ import random
 # Change to your input folder paths if different
 # Make sure they are BOTH in the same directory and at the prj root level
 input_cvat_folder = './CVAT_dataset'
-output_folder = './Training_and_Validation_Data'
+output_folder = './train_val_dataset'
 
 OUTPUT_TRAIN_FOLDER = 'TRAIN'
 OUTPUT_VAL_FOLDER = 'VAL'
@@ -44,18 +44,18 @@ def create_train_split_folders(output_folder):
                 os.mkdir(os.path.join(output_folder, subfolder, subsubfolder))
     
 
-def split_val_data(source_dir, dest_dir):
-    cvat_file_names = os.listdir(source_dir)
+def split_val_data(src_dir, dest_dir):
+    cvat_file_names = os.listdir(src_dir)
     
     # Only get % of frame pairs (dir has both img and txt of frame, so only get % of one type eg. txt)
     txt_files = [os.path.splitext(file)[0] for file in cvat_file_names]
     frame_pairs = [(frame_name + '.txt', frame_name + '.jpg') for frame_name in set(txt_files)]
     val_percent = int(len(frame_pairs) * VAL_SPLIT_RATIO)
+
+    # Random sample for validation set
     random.shuffle(frame_pairs)
 
     for pair in frame_pairs[:val_percent]:
-        txt_file_path = os.path.join(source_dir, pair[0])
-        img_file_path = os.path.join(source_dir, pair[1])
         if not pair[0] in cvat_file_names:
             print(f'{pair[0]} not found. Continuing..')
             continue
@@ -63,31 +63,27 @@ def split_val_data(source_dir, dest_dir):
             print(f'{pair[1]} not found. Continuing..')
             continue
         
-        # if img_file in cvat_file_names:
-        #     img_file_path = os.path.join(source_dir, img_file)
-            
-        #     # move txt file to val directory
-        #     shutil.move(cvat_file_path, txt_dest_dir)
-        #     # print statements for testing
-        #     # print(f"Moved {cvat_file} to {txt_dest_dir}")
+        txt_src_path = os.path.join(src_dir, pair[0])
+        img_src_path = os.path.join(src_dir, pair[1])
+        txt_dest_path = os.path.join(dest_dir, OUTPUT_TXT_SUBFOLDER, pair[0])
+        img_dest_path = os.path.join(dest_dir, OUTPUT_IMG_SUBFOLDER, pair[1])
 
-        #     # move img file to val directory
-        #     shutil.move(img_file_path, img_dest_dir)
-        #     # print(f"Moved {img_file} to {img_dest_dir}")
+        shutil.move(txt_src_path, txt_dest_path)
+        shutil.move(img_src_path, img_dest_path)
 
-    # print(f"Validation data created successfully!")
+    print(f"Validation data created successfully!")
 
 
 # put all the CVAT txt and img files their corresponding directories
-def move_data_to_dir(txt_source_dir, txt_dest_dir, img_dest_dir):
-    if not os.path.isdir(txt_source_dir):
-        print(f"Error: The directory ({txt_source_dir} not found.")
+def move_data_to_dir(txt_src_dir, txt_dest_dir, img_dest_dir):
+    if not os.path.isdir(txt_src_dir):
+        print(f"Error: The directory ({txt_src_dir} not found.")
         return
     
-    print(f"Moving data from {txt_source_dir} to {txt_dest_dir} and {img_dest_dir}...")
+    print(f"Moving data from {txt_src_dir} to {txt_dest_dir} and {img_dest_dir}...")
     
     # get the file names in the corresponding directories
-    cvat_file_names = os.listdir(txt_source_dir)
+    cvat_file_names = os.listdir(txt_src_dir)
     
     # create the directories if they don't exist
     create_train_split_folders(txt_dest_dir, img_dest_dir)
@@ -98,21 +94,21 @@ def move_data_to_dir(txt_source_dir, txt_dest_dir, img_dest_dir):
     # move the files to the new directories
     for cvat_file in cvat_file_names:
         if cvat_file.endswith('.txt'):
-            cvat_txt_file_path = os.path.join(txt_source_dir, cvat_file)
+            cvat_txt_file_path = os.path.join(txt_src_dir, cvat_file)
             shutil.move(cvat_txt_file_path, txt_dest_dir)
             # print for testing 
             # print(f"Moved {cvat_file} to {txt_dest_dir}")
             
         if cvat_file.endswith('.jpg'):
-            cvat_img_file_path = os.path.join(txt_source_dir, cvat_file)
+            cvat_img_file_path = os.path.join(txt_src_dir, cvat_file)
             shutil.move(cvat_img_file_path, img_dest_dir)
             # print for testing
             # print(f"Moved {cvat_file} to {img_dest_dir}")
         
         # delete folder after all files gone
-        if not os.listdir(txt_source_dir):
-            os.rmdir(txt_source_dir)
-            print(f"Deleting {txt_source_dir}...")
+        if not os.listdir(txt_src_dir):
+            os.rmdir(txt_src_dir)
+            print(f"Deleting {txt_src_dir}...")
 
         
     print(f"Data successfully moved to {txt_dest_dir} and {img_dest_dir}")
@@ -129,14 +125,14 @@ def main():
     cvat_subfolder_list = [d for d in os.listdir(input_cvat_folder) if os.path.isdir(os.path.join(input_cvat_folder, d))]
 
     for num in sorted(cvat_subfolder_list):
-        cvat_source_dir = os.path.join(input_cvat_folder, str(num))
-        print(f"Creating validation data for {cvat_source_dir}..")
-        split_val_data(cvat_source_dir, os.path.join(output_folder, OUTPUT_VAL_FOLDER))
+        cvat_src_dir = os.path.join(input_cvat_folder, str(num))
+        print(f"Creating validation data for {cvat_src_dir}..")
+        split_val_data(cvat_src_dir, os.path.join(output_folder, OUTPUT_VAL_FOLDER))
         
     # for i in ranges:
-    #     cvat_source_dir = f"../CVAT_dataset/{i}"
-    #     cvat_txt_dest_dir = f"../Training_and_Validation_Data/TRAIN/TXT" 
-    #     cvat_img_dest_dir = f"../Training_and_Validation_Data/TRAIN/IMG"
-    #     move_data_to_dir(cvat_source_dir, cvat_txt_dest_dir, cvat_img_dest_dir)
+    #     cvat_src_dir = f"../CVAT_dataset/{i}"
+    #     cvat_txt_dest_dir = f"../train_val_dataset/TRAIN/TXT" 
+    #     cvat_img_dest_dir = f"../train_val_dataset/TRAIN/IMG"
+    #     move_data_to_dir(cvat_src_dir, cvat_txt_dest_dir, cvat_img_dest_dir)
     
 main()
