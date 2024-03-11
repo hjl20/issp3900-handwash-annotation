@@ -13,7 +13,6 @@ Will have the following structure:
 import os 
 import shutil
 import random
-import math
 
 
 # create the training and validation directories
@@ -25,36 +24,36 @@ def create_dirs(txt_dest_dir, img_dest_dir):
         return
     
     
-# put all the CVAT txt files and PSKUS_dataset_preprocessed img files in the same directory
+# put all the CVAT txt and img files their corresponding directories
 def move_data_to_dir(txt_source_dir, txt_dest_dir, img_dest_dir):
     if not os.path.isdir(txt_source_dir):
         print(f"Error: The directory ({txt_source_dir} not found.")
         return
+    
     print(f"Moving data from {txt_source_dir} to {txt_dest_dir} and {img_dest_dir}...")
+    
     # get the file names in the corresponding directories
     cvat_file_names = os.listdir(txt_source_dir)
-
     
     # create the directories if they don't exist
     create_dirs(txt_dest_dir, img_dest_dir)
 
-
-    # move the files to the new directories
     '''
     Note: If there are any duplicate files, shutil will throw an error, will need to add a try and except block to handle this
     '''
+    # move the files to the new directories
     for cvat_file in cvat_file_names:
         if cvat_file.endswith('.txt'):
             cvat_txt_file_path = os.path.join(txt_source_dir, cvat_file)
             shutil.move(cvat_txt_file_path, txt_dest_dir)
-            # remove later 
-            print(f"Moved {cvat_file} to {txt_dest_dir}")
+            # print for testing 
+            # print(f"Moved {cvat_file} to {txt_dest_dir}")
             
         if cvat_file.endswith('.jpg'):
             cvat_img_file_path = os.path.join(txt_source_dir, cvat_file)
             shutil.move(cvat_img_file_path, img_dest_dir)
-            # remove later
-            print(f"Moved {cvat_file} to {img_dest_dir}")
+            # print for testing
+            # print(f"Moved {cvat_file} to {img_dest_dir}")
         
         # delete folder after all files gone
         if not os.listdir(txt_source_dir):
@@ -65,7 +64,6 @@ def move_data_to_dir(txt_source_dir, txt_dest_dir, img_dest_dir):
     print(f"Data successfully moved to {txt_dest_dir} and {img_dest_dir}")
 
         
-
 def create_val_data(source_dir, txt_dest_dir, img_dest_dir):
     create_dirs(txt_dest_dir, img_dest_dir)
     cvat_file_names = os.listdir(source_dir)
@@ -75,26 +73,25 @@ def create_val_data(source_dir, txt_dest_dir, img_dest_dir):
     txt_file = [file for file in cvat_file_names if file.endswith('.txt')]
     val_percent = int(len(cvat_file_names)*0.2)
     
-    # getting randomly 20% of data in directory
+
     for cvat_file in txt_file[:val_percent]:
-
+        # txt file path
         cvat_file_path = os.path.join(source_dir, cvat_file)
-
         # find corresponding image file
         file_name = os.path.splitext(cvat_file)[0]
-        #print(file_name)
         img_file = file_name + ".jpg"
+        
         if img_file in cvat_file_names:
             img_file_path = os.path.join(source_dir, img_file)
             
             # move txt file to val directory
             shutil.move(cvat_file_path, txt_dest_dir)
-            # can remove print statements
-            print(f"Moved {cvat_file} to {txt_dest_dir}")
+            # print statements for testing
+            # print(f"Moved {cvat_file} to {txt_dest_dir}")
 
             # move img file to val directory
             shutil.move(img_file_path, img_dest_dir)
-            print(f"Moved {img_file} to {img_dest_dir}")
+            # print(f"Moved {img_file} to {img_dest_dir}")
 
     print(f"Validation data created successfully!")
 
