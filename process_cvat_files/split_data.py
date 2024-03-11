@@ -80,7 +80,7 @@ def split_to_train_val(src_dir, dest_dir):
         if not pair[1] in cvat_file_names:
             print(f'{pair[1]} not found. Continuing..')
             continue
-        
+
         move_frame_pairs(pair, src_dir, dest_val_dir)
 
         # Remove to updated pair list to move later
@@ -114,11 +114,9 @@ def main():
 
     # Get dataset #s and process
     cvat_subfolder_list = [d for d in os.listdir(input_cvat_folder) if os.path.isdir(os.path.join(input_cvat_folder, d))]
-
     for num in sorted(cvat_subfolder_list):
         cvat_src_dir = os.path.join(input_cvat_folder, str(num))
         split_to_train_val(cvat_src_dir, output_folder)
-
     
     # Delete unneeded folders from previous steps
     print("Cleaning up processed dataset folders..")

@@ -144,6 +144,7 @@ def main():
         cvat_processed_dir = os.path.join(input_cvat_folder, CVAT_SUBFOLDER_PREFIX + str(num))
         if os.path.isdir(cvat_processed_dir):
             shutil.rmtree(cvat_processed_dir)
+            
     cvat_discard_dir = os.path.join(input_cvat_folder, '0')
     if os.path.isdir(cvat_discard_dir):
         shutil.rmtree(cvat_discard_dir)
