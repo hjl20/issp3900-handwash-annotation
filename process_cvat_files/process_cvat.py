@@ -66,7 +66,7 @@ def move_file_to_subfolder(file_path, subfolder_path):
 
 
 def process_cvat_files(cvat_dir, pub_dir):
-    cvat_txt_dir = os.path.join(cvat_dir, "obj_Train_data")
+    cvat_txt_dir = os.path.join(cvat_dir, "obj_train_data")
     pub_txt_dir = pub_dir + PUB_TXT_SUBFOLDER_SUFFIX
     pub_img_dir = pub_dir + PUB_IMG_SUBFOLDER_SUFFIX
 
