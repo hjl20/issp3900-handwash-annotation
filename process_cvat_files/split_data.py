@@ -74,7 +74,7 @@ def split_to_train_val(src_dir, dest_dir):
     random.shuffle(frame_pairs)
 
     # Move sampled pairs into val folders
-    with alive_bar(len(frame_pairs[:val_percent]), title="Validation Set") as bar:
+    with alive_bar(len(frame_pairs[:val_percent]), title="Validation") as bar:
         for pair in frame_pairs[:val_percent]:
             if not pair[0] in cvat_file_names:
                 print(f'{pair[0]} not found. Continuing..')
@@ -90,7 +90,7 @@ def split_to_train_val(src_dir, dest_dir):
             bar()
 
     # Move remaining pairs into train folders
-    with alive_bar(len(frame_pairs), title="Training   Set") as bar:
+    with alive_bar(len(frame_pairs), title="Training  ") as bar:
         for pair in frame_pairs:
             if not pair[0] in cvat_file_names:
                 print(f'{pair[0]} not found. Continuing..')
