@@ -13,6 +13,7 @@ Will have the following structure:
 import os 
 import shutil
 import random
+from alive_progress import alive_bar
 
 # Paths in script are defined from prj root directory (i.e. issp3900-handwash-annotation folder)
 # Change to your input folder paths if different
@@ -73,29 +74,33 @@ def split_to_train_val(src_dir, dest_dir):
     random.shuffle(frame_pairs)
 
     # Move sampled pairs into val folders
-    for pair in frame_pairs[:val_percent]:
-        if not pair[0] in cvat_file_names:
-            print(f'{pair[0]} not found. Continuing..')
-            continue
-        if not pair[1] in cvat_file_names:
-            print(f'{pair[1]} not found. Continuing..')
-            continue
+    with alive_bar(len(frame_pairs[:val_percent])) as bar:
+        for pair in frame_pairs[:val_percent]:
+            if not pair[0] in cvat_file_names:
+                print(f'{pair[0]} not found. Continuing..')
+                continue
+            if not pair[1] in cvat_file_names:
+                print(f'{pair[1]} not found. Continuing..')
+                continue
 
-        move_frame_pairs(pair, src_dir, dest_val_dir)
+            move_frame_pairs(pair, src_dir, dest_val_dir)
 
-        # Remove to updated pair list to move later
-        frame_pairs.remove(pair)
+            # Remove to updated pair list to move later
+            frame_pairs.remove(pair)
+            bar()
 
     # Move remaining pairs into train folders
-    for pair in frame_pairs:
-        if not pair[0] in cvat_file_names:
-            print(f'{pair[0]} not found. Continuing..')
-            continue
-        if not pair[1] in cvat_file_names:
-            print(f'{pair[1]} not found. Continuing..')
-            continue
+    with alive_bar(len(frame_pairs)) as bar:
+        for pair in frame_pairs:
+            if not pair[0] in cvat_file_names:
+                print(f'{pair[0]} not found. Continuing..')
+                continue
+            if not pair[1] in cvat_file_names:
+                print(f'{pair[1]} not found. Continuing..')
+                continue
 
-        move_frame_pairs(pair, src_dir, dest_train_dir)
+            move_frame_pairs(pair, src_dir, dest_train_dir)
+            bar()
 
     print(f"Train/Val split successfully for {src_dir}!")
 
