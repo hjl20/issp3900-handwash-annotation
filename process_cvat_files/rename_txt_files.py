@@ -14,14 +14,12 @@ PUB_SUBFOLDER_SUFFIX = '_TXT'
 
 
 def dirname_to_lowercase(dir):
+    folder_name = os.path.basename(dir)
+    new_folder_name = folder_name.lower()
+    new_folder_path = os.path.join(os.path.dirname(dir), new_folder_name)
     if os.path.isdir(dir):
-        folder_name = os.path.basename(dir)
-        new_folder_name = folder_name.lower()
-        new_folder_path = os.path.join(os.path.dirname(dir), new_folder_name)
         os.rename(dir, new_folder_path)
-        return new_folder_path
-    else:
-        return dir
+    return new_folder_path
 
 
 def get_sorted_txt_files(dir):
