@@ -13,6 +13,7 @@ Will have the following structure:
 
 import os
 import shutil
+from alive_progress import alive_bar
 
 # Paths in script are defined from prj root directory (i.e. issp3900-handwash-annotation folder)
 # Change to your input folder paths if different
@@ -65,7 +66,7 @@ def move_file_to_subfolder(file_path, subfolder_path):
 
 
 def process_cvat_files(cvat_dir, pub_dir):
-    cvat_txt_dir = os.path.join(cvat_dir, "obj_Train_data")
+    cvat_txt_dir = os.path.join(cvat_dir, "obj_train_data")
     pub_txt_dir = pub_dir + PUB_TXT_SUBFOLDER_SUFFIX
     pub_img_dir = pub_dir + PUB_IMG_SUBFOLDER_SUFFIX
 
@@ -79,41 +80,43 @@ def process_cvat_files(cvat_dir, pub_dir):
         print(f"Error: {pub_img_dir} not found.")
         return
     
-    for pub_txt_file_name in os.listdir(pub_txt_dir):
-        if not pub_txt_file_name.endswith('.txt'):
-            print(f"{pub_txt_file_name} is not a txt. Continuing..")
-            continue
-        
-        # Get img path to move with annotation later
-        pub_img_file_path = os.path.join(pub_img_dir, os.path.splitext(pub_txt_file_name)[0] + '.jpg')
-        pub_txt_file_path = os.path.join(pub_txt_dir, pub_txt_file_name)
-        
-        if not os.path.isfile(pub_txt_file_path):
-            print(f"{pub_txt_file_path} not found. Continuing..")
-            continue
-        if not os.path.isfile(pub_img_file_path):
-            print(f"{pub_img_file_path} not found. Continuing..")
-            continue
+    with alive_bar(len(os.listdir(pub_txt_dir))) as bar:
+        for pub_txt_file_name in os.listdir(pub_txt_dir):
+            if not pub_txt_file_name.endswith('.txt'):
+                print(f"{pub_txt_file_name} is not a txt. Continuing..")
+                continue
+            
+            # Get img path to move with annotation later
+            pub_img_file_path = os.path.join(pub_img_dir, os.path.splitext(pub_txt_file_name)[0] + '.jpg')
+            pub_txt_file_path = os.path.join(pub_txt_dir, pub_txt_file_name)
+            
+            if not os.path.isfile(pub_txt_file_path):
+                print(f"{pub_txt_file_path} not found. Continuing..")
+                continue
+            if not os.path.isfile(pub_img_file_path):
+                print(f"{pub_img_file_path} not found. Continuing..")
+                continue
 
-        # Find matching file in cvat directory
-        file_name, ext = os.path.splitext(pub_txt_file_name)
-        cvat_txt_file_path = os.path.join(cvat_txt_dir, file_name + ext)
-        
-        if not os.path.isfile(cvat_txt_file_path):
-            print(f'{cvat_txt_file_path} not found. Continuing..')
+            # Find matching file in cvat directory
+            file_name, ext = os.path.splitext(pub_txt_file_name)
+            cvat_txt_file_path = os.path.join(cvat_txt_dir, file_name + ext)
+            
+            if not os.path.isfile(cvat_txt_file_path):
+                print(f'{cvat_txt_file_path} not found. Continuing..')
 
-        gesture_val = str(get_gesture_val(pub_txt_file_path))
-        # Get updated val to sort into subfolders. Gesture can change to 0 if label update is non-washing/empty file
-        updated_gesture_val = update_cvat_file(cvat_txt_file_path, gesture_val)
+            gesture_val = str(get_gesture_val(pub_txt_file_path))
+            # Get updated val to sort into subfolders. Gesture can change to 0 if label update is non-washing/empty file
+            updated_gesture_val = update_cvat_file(cvat_txt_file_path, gesture_val)
 
-        # Create subfolders to group same gesture files
-        cvat_txt_dir_subpath = os.path.join(os.path.dirname(cvat_dir), updated_gesture_val)
-        if not os.path.isdir(cvat_txt_dir_subpath):
-            os.mkdir(cvat_txt_dir_subpath)
+            # Create subfolders to group same gesture files
+            cvat_txt_dir_subpath = os.path.join(os.path.dirname(cvat_dir), updated_gesture_val)
+            if not os.path.isdir(cvat_txt_dir_subpath):
+                os.mkdir(cvat_txt_dir_subpath)
 
-        # We will move it to a subfolder based on gesture val
-        move_file_to_subfolder(cvat_txt_file_path, cvat_txt_dir_subpath)
-        move_file_to_subfolder(pub_img_file_path, cvat_txt_dir_subpath)
+            # We will move it to a subfolder based on gesture val
+            move_file_to_subfolder(cvat_txt_file_path, cvat_txt_dir_subpath)
+            move_file_to_subfolder(pub_img_file_path, cvat_txt_dir_subpath)
+            bar()
 
     print(f"Modified gesture values successfully for {os.path.dirname(cvat_txt_dir)}!")
 

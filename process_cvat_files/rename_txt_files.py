@@ -1,6 +1,7 @@
 # SCRIPT 1/2 FOR PROCESSING CVAT
 
 import os
+from alive_progress import alive_bar
 
 # Paths in script are defined from prj root directory (i.e. issp3900-handwash-annotation folder)
 # Change to your input folder paths if different
@@ -48,17 +49,19 @@ def rename_annotation_files(cvat_txt_dir, pub_txt_dir):
         print(f"Error: number of frames is not equal between directories (CVAT: {len(cvat_files)} vs PUB: {len(pub_files)})")
         return
 
-    for i in range(len(cvat_files)):
-        cvat_file = cvat_files[i]
-        pub_file = pub_files[i]
+    with alive_bar(len(cvat_files)) as bar:
+        for i in range(len(cvat_files)):
+            cvat_file = cvat_files[i]
+            pub_file = pub_files[i]
 
-        # Create new file name with the same extension as the PUB file
-        file_name, ext = os.path.splitext(pub_file)
-        new_cvat_file_name = os.path.join(cvat_txt_dir, file_name + ext)
+            # Create new file name with the same extension as the PUB file
+            file_name, ext = os.path.splitext(pub_file)
+            new_cvat_file_name = os.path.join(cvat_txt_dir, file_name + ext)
 
-        # Rename the file
-        curr_cvat_file_path = os.path.join(cvat_txt_dir, cvat_file)
-        os.rename(curr_cvat_file_path, new_cvat_file_name)
+            # Rename the file
+            curr_cvat_file_path = os.path.join(cvat_txt_dir, cvat_file)
+            os.rename(curr_cvat_file_path, new_cvat_file_name)
+            bar()
 
     print(f"Renamed files successfully for {os.path.dirname(cvat_txt_dir)}!")
 
