@@ -41,7 +41,6 @@ def find_frame_labels(video_path):
     """
     file_name = os.path.basename(video_path)
     annotators_dir = os.path.join(os.path.dirname(os.path.dirname(video_path)), "Annotations")
-
     annotations = []
 
     for a in range(1, TOTAL_ANNOTATORS + 1):
@@ -88,7 +87,7 @@ def get_frames(folder):
                     continue
                 
                 # get gesture code of current video
-                video_path = os.path.join(subdir, video_name)
+                video_path = os.path.join(input_folder, folder, subdir, video_name)
                 codes = find_frame_labels(video_path)
 
                 # video splitting process
