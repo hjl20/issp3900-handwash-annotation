@@ -79,7 +79,6 @@ def main():
     # Get dataset #s and process
     cvat_subfolder_list = [d for d in os.listdir(input_cvat_folder) if os.path.isdir(os.path.join(input_cvat_folder, d))]
     set_numbers = [int(folder.removeprefix(CVAT_SUBFOLDER_PREFIX)) for folder in cvat_subfolder_list if folder.startswith(CVAT_SUBFOLDER_PREFIX)]
-    print(set_numbers)
     for num in sorted(set_numbers):
         cvat_txt_dir = os.path.join(input_cvat_folder, CVAT_SUBFOLDER_PREFIX + str(num), "obj_Train_data")
         pub_txt_dir = os.path.join(input_pub_folder, PUB_SUBFOLDER_PREFIX + str(num) + PUB_SUBFOLDER_SUFFIX)
