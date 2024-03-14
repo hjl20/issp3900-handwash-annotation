@@ -134,27 +134,32 @@ def main():
         
     # Get dataset #s and process
     cvat_subfolder_list = [d for d in os.listdir(input_cvat_folder) if os.path.isdir(os.path.join(input_cvat_folder, d))]
-    set_numbers = [int(folder.removeprefix(CVAT_SUBFOLDER_PREFIX)) for folder in cvat_subfolder_list]
+    set_numbers = [int(folder.removeprefix(CVAT_SUBFOLDER_PREFIX)) for folder in cvat_subfolder_list if folder.startswith(CVAT_SUBFOLDER_PREFIX)]
     for num in sorted(set_numbers):
         cvat_txt_dir = os.path.join(input_cvat_folder, CVAT_SUBFOLDER_PREFIX + str(num))
         pub_img_dir = os.path.join(input_pub_folder, PUB_SUBFOLDER_PREFIX + str(num))
 
-        print(f"Modifying annotation set {num}..")
+        print(f"Modifying {CVAT_SUBFOLDER_PREFIX + str(num)} annotations..")
         process_cvat_files(cvat_txt_dir, pub_img_dir)
     
     # Delete unneeded folders from previous steps
     print("Cleaning up processed dataset folders..")
     for num in set_numbers:
         cvat_processed_dir = os.path.join(input_cvat_folder, CVAT_SUBFOLDER_PREFIX + str(num))
+        print(f"Cleaning up {cvat_processed_dir}..")
         if os.path.isdir(cvat_processed_dir):
             shutil.rmtree(cvat_processed_dir)
             
     cvat_discard_dir = os.path.join(input_cvat_folder, '0')
+    print(f"Cleaning up {cvat_discard_dir}..")
     if os.path.isdir(cvat_discard_dir):
         shutil.rmtree(cvat_discard_dir)
+    print(f"Cleaning up {input_pub_folder}..")
     if os.path.isdir(input_pub_folder):
         shutil.rmtree(input_pub_folder)
     print("Clean up completed!")
 
 
-main()
+# ----------------------------------------------
+if __name__ == "__main__":
+    main()

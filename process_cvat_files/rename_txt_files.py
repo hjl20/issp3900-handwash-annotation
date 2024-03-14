@@ -78,7 +78,7 @@ def main():
 
     # Get dataset #s and process
     cvat_subfolder_list = [d for d in os.listdir(input_cvat_folder) if os.path.isdir(os.path.join(input_cvat_folder, d))]
-    set_numbers = [int(folder.removeprefix(CVAT_SUBFOLDER_PREFIX)) for folder in cvat_subfolder_list]
+    set_numbers = [int(folder.removeprefix(CVAT_SUBFOLDER_PREFIX)) for folder in cvat_subfolder_list if folder.startswith(CVAT_SUBFOLDER_PREFIX)]
     for num in sorted(set_numbers):
         cvat_txt_dir = os.path.join(input_cvat_folder, CVAT_SUBFOLDER_PREFIX + str(num), "obj_Train_data")
         pub_txt_dir = os.path.join(input_pub_folder, PUB_SUBFOLDER_PREFIX + str(num) + PUB_SUBFOLDER_SUFFIX)
@@ -86,8 +86,10 @@ def main():
         # Context: folders vary from obj_Train_data and obj_train_data, so lower to prevent errors 
         cvat_txt_dir = dirname_to_lowercase(cvat_txt_dir)
         
-        print(f"Renaming set {num}..")
+        print(f"Renaming {CVAT_SUBFOLDER_PREFIX + str(num)} files..")
         rename_annotation_files(cvat_txt_dir, pub_txt_dir)
 
 
-main()
+# ----------------------------------------------
+if __name__ == "__main__":
+    main()

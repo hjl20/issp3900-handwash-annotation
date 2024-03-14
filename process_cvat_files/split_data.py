@@ -122,14 +122,16 @@ def main():
     for num in sorted(cvat_subfolder_list):
         cvat_src_dir = os.path.join(input_cvat_folder, str(num))
 
-        print(f"Splitting set {num}..")
+        print(f"Splitting gesture set {num}..")
         split_to_train_val(cvat_src_dir, output_folder)
     
     # Delete unneeded folders from previous steps
-    print("Cleaning up processed dataset folders..")
+    print(f"Cleaning up {input_cvat_folder}..")
     if os.path.isdir(input_cvat_folder):
         shutil.rmtree(input_cvat_folder)
     print("Clean up completed!")
 
 
-main()
+# ----------------------------------------------
+if __name__ == "__main__":
+    main()
