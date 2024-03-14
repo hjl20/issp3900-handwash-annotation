@@ -86,7 +86,7 @@ def main():
         # Context: folders vary from obj_Train_data and obj_train_data, so lower to prevent errors 
         cvat_txt_dir = dirname_to_lowercase(cvat_txt_dir)
         
-        print(f"Renaming set {num}..")
+        print(f"Renaming {CVAT_SUBFOLDER_PREFIX + str(num)} files..")
         rename_annotation_files(cvat_txt_dir, pub_txt_dir)
 
 
