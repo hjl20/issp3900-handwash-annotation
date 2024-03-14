@@ -80,7 +80,7 @@ def get_frames(folder):
     print('Processing folder: ' + folder + ' ...')
 
     for subdir, dirs, files in os.walk(os.path.join(input_folder, folder)):
-        if not subdir.endswith('/Videos') or not subdir.endswith('\Videos'):
+        if not subdir.endswith('/Videos') or not subdir.endswith('\\Videos'):
             continue
 
         for videofile in files:
