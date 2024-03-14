@@ -90,4 +90,6 @@ def main():
         rename_annotation_files(cvat_txt_dir, pub_txt_dir)
 
 
-main()
+# ----------------------------------------------
+if __name__ == "__main__":
+    main()

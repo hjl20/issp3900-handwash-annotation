@@ -132,4 +132,6 @@ def main():
     print("Clean up completed!")
 
 
-main()
+# ----------------------------------------------
+if __name__ == "__main__":
+    main()

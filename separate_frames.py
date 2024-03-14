@@ -131,6 +131,7 @@ def main():
             os.mkdir(os.path.join(output_folder, folder + TXT_FOLDER_EXT))
         get_frames(folder)
 
+
 # ----------------------------------------------
 if __name__ == "__main__":
     main()
