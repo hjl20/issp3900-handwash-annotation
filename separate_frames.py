@@ -73,7 +73,7 @@ def find_frame_labels(video_path):
 
 
 def get_frames(folder):
-    print('Processing folder: ' + folder + ' ..')
+    print('Processing folder: ' + folder + '..')
 
     for subdir in os.listdir(os.path.join(input_folder, folder)):
         if not os.path.basename(subdir) == 'Videos':
