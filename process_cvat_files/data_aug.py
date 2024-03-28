@@ -1,11 +1,16 @@
+''''Documentation can be found at https://github.com/okankop/vidaug/tree/master/vidaug/augmentors'''
 import os
 import cv2
 from vidaug import augmentors as va
 from skimage.io import imsave
 
+image_folder  = './train_val_dataset/train'
+output_folder = './train_val_dataset/augmented_images'
+
+#To do: Load bounding box file location
+
 def load_batch(batch_idx):
     # Assuming each batch is a separate image file
-    image_folder = r"D:\BCIT\ISSP\yolo\ultralytics-main\data\images"  # replace with your actual folder path
     image_files = os.listdir(image_folder)
     image_file = os.path.join(image_folder, image_files[batch_idx])
 
@@ -13,14 +18,14 @@ def load_batch(batch_idx):
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # convert color space from BGR to RGB
     return [image]  # return image as a list to be compatible with the augmentor
 
-#All available augmentors (Note that any flip, crop, or resize augmentor would require the bounding box be changed as well)
-""" RandomRotate
-    * RandomResize
-    * RandomTranslate
-    * RandomShear
-    * CenterCrop
-    * CornerCrop
-    * RandomCrop 
+#All available augmentors (Note that any flip, crop, or resize augmentor would require the bounding box be changed as well). Also, all random augmentations are difficult to do when there is a bounding box involved. Maybe do the augmentation while the bounding box doesn't exist?
+""" RandomRotate (Random, diffiuclt to manage with bounding box)
+    * RandomResize (Random, diffiuclt to manage with bounding box)
+    * RandomTranslate (Random, diffiuclt to manage with bounding box)
+    * RandomShear (Random, diffiuclt to manage with bounding box)
+    * CenterCrop (Bounding box needs to be resized based on image. Note that occasionally the bounding box may be outside the image after cropping. Need to check for this)
+    * CornerCrop (Bounding box needs to be resized based on image. Note that occasionally the bounding box may be outside the image after cropping. Need to check for this)
+    * RandomCrop  (Bounding box needs to be resized based on image. Note that occasionally the bounding box may be outside the image after cropping. Need to check for this)
     * HorizontalFlip
     * VerticalFlip
     * GaussianBlur
@@ -58,18 +63,17 @@ seq = va.Sequential([
 ])
 
 # Create a new directory for augmented images
-augmented_dir = r"D:\BCIT\ISSP\yolo\ultralytics-main\data\augmented_images"
-os.makedirs(augmented_dir, exist_ok=True)
+
+os.makedirs(output_folder, exist_ok=True)
 
 
 
 # Load a batch of images
-for batch_idx in range(len(os.listdir(r"D:\BCIT\ISSP\yolo\ultralytics-main\data\images"))):
+for batch_idx in range(len(os.listdir(image_folder))):
     image = load_batch(batch_idx)
     image_aug = seq(image)
     # Save augmented image to a new file
-    imsave(os.path.join(augmented_dir, f"image_{batch_idx}_aug.jpg"), (image_aug[0]).astype('uint8'))
+    imsave(os.path.join(output_folder, f"image_{batch_idx}_aug.jpg"), (image_aug[0]).astype('uint8'))
 
-# Directory containing the images
-image_dir = r"D:\BCIT\ISSP\yolo\ultralytics-main\data\augmented_images"
+
 
